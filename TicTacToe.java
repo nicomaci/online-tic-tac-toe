@@ -24,7 +24,7 @@ public class TicTacToe {
     // Parameters: [Player (1 or 0), Move Position (from 0 to 8)
     // Return: 1 if valid move, -1 if invalid move
     public int makeMove(int player, int position) {
-        if (position < 0 || position > 8) {
+        if (position < 0 || position > 8 || board[position] == 1 || board[position] == 0) {
             return -1;
         }
 
@@ -87,5 +87,4 @@ public class TicTacToe {
     }
     
 }
-
 

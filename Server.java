@@ -57,7 +57,7 @@ public class Server {
                 System.out.println("Waiting for client move...");
                 String clientResponse = inFromClient.readLine();
                 int clientMove = Integer.parseInt(clientResponse);
-                board.makeMove(1, clientMove);
+                int y = board.makeMove(1, clientMove);
                 System.out.println("Client's move:");
                 System.out.println(board.stateString());
 
