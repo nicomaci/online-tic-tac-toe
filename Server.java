@@ -2,7 +2,7 @@ import java.io.*;
 import java.net.*;
 
 public class Server {
-    private static final int PORT = 12345; // Choose any available port
+    private static final int PORT = 3351; // Choose any available port
     
     public static void main(String[] args) {
         try {
@@ -31,14 +31,20 @@ public class Server {
                 System.out.println("Player 1 (Server)'s turn.");
                 System.out.println("Server, enter position (0-8): ");
                 int serverMove = Integer.parseInt(serverInput.readLine());
-                board.makeMove(0, serverMove);
+                int x = board.makeMove(0, serverMove);
+                if (x == -1) {
+                    System.out.println("Invalid move, please input a new position");
+                    continue;
+                }
                 System.out.println("Server's move:");
                 System.out.println(board.stateString());
                 outToClientGame.println(board.stateString());
+                outToClientGame.println("END_OF_BOARD_STATE");
 
                 // Check for server (player 1) victory
-                if (board.victoryCheck() == 1) {
+                if (board.victoryCheck() == 0) {
                     outToClientGame.println("Server wins!");
+                    System.out.println("Server wins!");
                     break;
                 }
 
@@ -52,8 +58,9 @@ public class Server {
                 System.out.println(board.stateString());
 
                 // Check for client (player 2) victory
-                if (board.victoryCheck() == 0) {
+                if (board.victoryCheck() == 1) {
                     outToClientGame.println("Client (Player 2) wins!");
+                    System.out.println("Client (Player 2) wins!");
                     break;
                 }
             }

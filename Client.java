@@ -1,73 +1,66 @@
 import java.io.*;
 import java.net.*;
-import java.util.Scanner;
 
 public class Client {
+    private static final String SERVER_IP = "127.0.0.1"; // Server's IP address
+    private static final int PORT = 3351; // Server's port number
 
-    private Socket socket;
-    private DataInputStream in;
-    private DataOutputStream out;
+    public static void main(String[] args) {
+        try {
+            // Connect to the server
+            Socket socket = new Socket(SERVER_IP, PORT);
+            System.out.println("Connected to server.");
 
-    public Client(String ip, int  port) throws IOException {
+            // Creating input and output streams for communication with server
+            BufferedReader inFromServer = new BufferedReader(new InputStreamReader(socket.getInputStream()));
+            PrintWriter outToServer = new PrintWriter(socket.getOutputStream(), true);
+            BufferedReader userInput = new BufferedReader(new InputStreamReader(System.in));
 
-        Scanner scan = new Scanner(System.in);
+            // Receive initial message from server
+            System.out.println(inFromServer.readLine());
 
-        // client socket creation
-        socket = new Socket(ip, port);
-        
-        // input Output stream creation
-        in = new DataInputStream(new BufferedInputStream(socket.getInputStream()));
-        out = new DataOutputStream(socket.getOutputStream());
+            // Main game loop
+            while (true) {
+                // Receive and display server's move
+                System.out.println("Waiting for server's move...");
+                String serverResponse = inFromServer.readLine(); //this is going to be the board
 
-        //introduction message from server and command list
-        String serverMessage = in.readUTF();
-        System.out.println("Recieved from server: " + serverMessage);
-        System.out.println("TicTacToe, Connect Four, bye, or shutdown server: ");
+                // Check for game over message from server
+                if (serverResponse.contains("Server wins!") || serverResponse.contains("Client (Player 2) wins!")) {
+                    System.out.println(serverResponse);
+                    break;
+                }
 
-        // program loop
-        while (true) {
+                System.out.println(serverResponse);
+                String line;
+                while (!(line = inFromServer.readLine()).equals("END_OF_BOARD_STATE")) {
+                    System.out.println(line);
+                }
+                
 
-            // user inputs command, if they input bye/shutdown at any point game ends
+                // Check for game over message from server
+                if (serverResponse.contains("Server wins!") || serverResponse.contains("Client (Player 2) wins!")) {
+                    System.out.println(serverResponse);
+                    break;
+                }
 
-            System.out.print("Input row: ");
-            String userInputRow = scan.nextLine();
+                // Player's turn (client)
+                System.out.println("Your turn. Enter position (0-8): ");
+                int clientMove = Integer.parseInt(userInput.readLine());
+                outToServer.println(clientMove);
 
-            if (userInput.equals("bye")) {
-                String response = in.readUTF();
-                System.out.println("Server response: " + response);
-                System.out.println("exit");
-                break;
-
-            } else if (userInput.equals("shutdown server")) {
-                String response = in.readUTF();
-                System.out.println("Server response: " + response);
-                System.out.println("exit");
-                break;
-
+                //Check for game over message from server
+                String clientResponse = inFromServer.readLine();
+                if (clientResponse.contains("Server wins!") || serverResponse.contains("Client (Player 2) wins!")) {
+                    System.out.println(clientResponse);
+                    break;
+                }
             }
 
-            Sytem.out.print("Input column: ");
-            String userInputCol = scan.nextLine();
-
-            int index = stoi(userInputRow) * stoi(userInputCol); //calculate index
-
-            string userInput = String.valueOf(index); //index of array they plan to take, converted to string
-
-            // Write out to server user command and receive response
-            out.writeUTF(userInput);
-            String response = in.readUTF();
-
-            System.out.println("Server response: " + response); // server responds w/ new board after calling game logic
-
+            // Close all resources
+            socket.close();
+        } catch (IOException e) {
+            e.printStackTrace();
         }
-
-        scan.close();
-
-    }
-
-    public static void main(String[] args) throws IOException {
-
-        new Client(args[0], Integer.parseInt(args[1]));
-        
     }
 }
