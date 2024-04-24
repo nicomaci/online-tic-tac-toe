@@ -28,6 +28,14 @@ public class Client {
                 // Check for game over message from server
                 if (serverResponse.contains("Server wins!") || serverResponse.contains("Client (Player 2) wins!")) {
                     System.out.println(serverResponse);
+                    
+                    if (socket.getInputStream().available() > 0) {
+                        String line;
+                        while (!(line = inFromServer.readLine()).equals("END_OF_BOARD_STATE")) {
+                        System.out.println(line);
+                        }
+                    }
+                    
                     break;
                 }
 
@@ -41,6 +49,7 @@ public class Client {
                 // Check for game over message from server
                 if (serverResponse.contains("Server wins!") || serverResponse.contains("Client (Player 2) wins!")) {
                     System.out.println(serverResponse);
+                    // System.out.println(inFromServer.readLine());
                     break;
                 }
 
@@ -49,12 +58,12 @@ public class Client {
                 int clientMove = Integer.parseInt(userInput.readLine());
                 outToServer.println(clientMove);
 
-                //Check for game over message from server
-                String clientResponse = inFromServer.readLine();
-                if (clientResponse.contains("Server wins!") || serverResponse.contains("Client (Player 2) wins!")) {
-                    System.out.println(clientResponse);
-                    break;
+                String line2;
+                while (!(line2 = inFromServer.readLine()).equals("END_OF_BOARD_STATE")) {
+                    System.out.println(line2);
                 }
+
+                
             }
 
             // Close all resources

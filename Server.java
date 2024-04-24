@@ -4,7 +4,7 @@ import java.net.*;
 public class Server {
     private static final int PORT = 3351; // Choose any available port
     
-    public static void main(String[] args) {
+    public static void main(String[] args) throws InterruptedException {
         try {
             ServerSocket serverSocket = new ServerSocket(PORT);
             System.out.println("Server started. Waiting for client to connect...");
@@ -30,6 +30,7 @@ public class Server {
                 // Player 1's turn (server)
                 System.out.println("Player 1 (Server)'s turn.");
                 System.out.println("Server, enter position (0-8): ");
+                // System.out.println(board.stateString());
                 int serverMove = Integer.parseInt(serverInput.readLine());
                 int x = board.makeMove(0, serverMove);
                 if (x == -1) {
@@ -38,18 +39,21 @@ public class Server {
                 }
                 System.out.println("Server's move:");
                 System.out.println(board.stateString());
-                outToClientGame.println(board.stateString());
-                outToClientGame.println("END_OF_BOARD_STATE");
-
-                // Check for server (player 1) victory
+                
                 if (board.victoryCheck() == 0) {
                     outToClientGame.println("Server wins!");
+                    outToClientGame.println(board.stateString());
+                    outToClientGame.println("END_OF_BOARD_STATE");
                     System.out.println("Server wins!");
+                    Thread.sleep(100);
                     break;
                 }
 
+                outToClientGame.println(board.stateString());
+                outToClientGame.println("END_OF_BOARD_STATE");
+
                 // Player 2's turn (client)
-                outToClientGame.println("Your turn. Enter position (0-8): ");
+                //outToClientGame.println("Your turn. Enter position (0-8): ");
                 System.out.println("Waiting for client move...");
                 String clientResponse = inFromClient.readLine();
                 int clientMove = Integer.parseInt(clientResponse);
@@ -57,10 +61,14 @@ public class Server {
                 System.out.println("Client's move:");
                 System.out.println(board.stateString());
 
+                outToClientGame.println(board.stateString());
+                outToClientGame.println("END_OF_BOARD_STATE");
+
                 // Check for client (player 2) victory
                 if (board.victoryCheck() == 1) {
                     outToClientGame.println("Client (Player 2) wins!");
                     System.out.println("Client (Player 2) wins!");
+                    Thread.sleep(100);
                     break;
                 }
             }
