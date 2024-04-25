@@ -50,7 +50,7 @@ public class TicTacToe {
     }
 
     // Parameters: none
-    // Return: 1 if player 1 (X) won, 0 if player 0 (O) won, -1 if no victory yet
+    // Return: 1 if player 1 (X) won, 0 if player 0 (O) won, -1 if no victory yet, 
     public int victoryCheck() {
         for (int i = 0; i <= 6; i += 3) {
             if (board[i] != -1 && board[i] == board[i+1] && board[i] == board[i+2]) {
@@ -70,6 +70,16 @@ public class TicTacToe {
 
         if (board[2] != -1 && board[2] == board[4] && board[2] == board[6]) {
             return board[2];
+        }
+
+        int draw = 0;
+        for (int i : board) {
+            if (i == -1) {
+                draw += 1;
+            }
+        }
+        if (draw == 0) {
+            return 2;
         }
 
         return -1;
